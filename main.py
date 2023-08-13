@@ -2,38 +2,42 @@ from collections import UserDict
 
 
 class Field:
-    pass
-
-
-class Name(Field):
     def __init__(self, value):
         self.value = value
 
 
+class Name(Field):
+    pass
+
+
 class Phone(Field):
-    def __init__(self, t_phone):
-        self.t_phone = t_phone
+    pass
 
 
 class Record:
-    def __init__(self, name: str, phones_list=None):
-        self.name = Name(name)
-        self.phones = [Phone(phone).t_phone for phone in phones_list]
-
-    def add_phone(self, phone):
-        if phone not in self.phones:
+    def __init__(self, name: Name, phone: Phone=None):
+        self.name = name
+        self.phones = []
+        if phone:
             self.phones.append(phone)
 
+    def add_phone(self, phone):
+        new_phone = Phone(phone)
+        if new_phone.value not in [ph.value for ph in self.phones]:
+            self.phones.append(new_phone)
+
     def delete_phone(self, phone):
-        if phone in self.phones:
-            self.phones.remove(phone)
+        for ph in self.phones:
+            if phone == ph.value:
+                self.phones.remove(ph)
 
     def change_phone(self, old_phone, new_phone):
-        index = self.phones.index(old_phone)
-        self.phones[index] = new_phone
+        for ph in self.phones:
+            if old_phone == ph.value:
+                self.delete_phone(old_phone)
+                self.add_phone(new_phone)
 
 
 class AddressBook(UserDict):
     def add_record(self, record: Record):
-        self.data[record.name.value] = [record.phones]
-
+        self.data[record.name.value] = record
